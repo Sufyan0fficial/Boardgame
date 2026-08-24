@@ -13,6 +13,16 @@ pipeline {
             }
         }
 
+        stage('Check Java') {
+            steps {
+                sh '''
+                    java -version
+                    javac -version
+                    mvn -version
+                '''
+            }
+        }
+
         stage('Build & Test') {
             steps {
                 sh 'mvn clean test'

@@ -1,7 +1,9 @@
+```groovy
 pipeline {
     agent any
 
     tools {
+        jdk 'JDK-11'
         maven 'Maven-3.9'
     }
 
@@ -13,11 +15,13 @@ pipeline {
             }
         }
 
-        stage('Check Java') {
+        stage('Check Environment') {
             steps {
                 sh '''
+                    echo "Java:"
                     java -version
-                    javac -version
+
+                    echo "Maven:"
                     mvn -version
                 '''
             }
@@ -50,3 +54,4 @@ pipeline {
         }
     }
 }
+```

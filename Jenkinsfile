@@ -1,27 +1,41 @@
 pipeline {
     agent any
-    
+
     tools {
-        jdk 'jdk17'
-        maven 'maven3'
+        maven 'Maven-3.9'
     }
-    
-    stages {   
-        stage('Compile') {
+
+    stages {
+
+        stage('Checkout') {
             steps {
-            sh 'mvn compile'
+                checkout scm
             }
         }
-        
-        stage('Test') {
+
+        stage('Build & Test') {
             steps {
-                sh 'mvn test'
+                sh 'mvn clean test'
             }
         }
-        
-        stage('Build') {
+
+        stage('SonarQube Analysis') {
             steps {
-                sh 'mvn package'
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=boardgame \
+                        -Dsonar.projectName=Boardgame
+                    '''
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
     }
